@@ -99,7 +99,7 @@ class _CompanyInput extends StatelessWidget {
       key: const Key('authPage_companyCode_textField'),
       labelText: context.l.o_l_company_code,
       onSubmit: (code) => context.read<LoginCubit>().companyCodeChanged(code!),
-      onChanged: (code) => context.read<LoginCubit>().usernameChanged(code!),
+      onChanged: (code) => context.read<LoginCubit>().companyCodeChanged(code!),
       focusNode: widgetFN,
       nextFocusNode: nextWidgetFN,
       validator: (value) {
