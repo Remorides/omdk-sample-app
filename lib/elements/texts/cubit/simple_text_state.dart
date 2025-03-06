@@ -19,6 +19,7 @@ final class SimpleTextState extends Equatable {
   final bool obscureText;
 
   SimpleTextState copyWith({
+    TextEditingController? controller,
     String? text,
     FieldTextError? errorText,
     bool? isInputTextEnabled,
@@ -26,7 +27,7 @@ final class SimpleTextState extends Equatable {
     bool? obscureText,
   }) {
     return SimpleTextState(
-      controller: controller,
+      controller: controller ?? this.controller,
       errorText: errorText,
       isInputTextEnabled: isInputTextEnabled ?? this.isInputTextEnabled,
       isActionEnabled: isActionEnabled ?? this.isActionEnabled,
@@ -36,6 +37,7 @@ final class SimpleTextState extends Equatable {
 
   @override
   List<Object?> get props => [
+        controller,
         errorText,
         isInputTextEnabled,
         isActionEnabled,

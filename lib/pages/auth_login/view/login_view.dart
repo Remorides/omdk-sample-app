@@ -100,6 +100,7 @@ class _CompanyInput extends StatelessWidget {
       labelText: context.l.o_l_company_code,
       onSubmit: (code) => context.read<LoginCubit>().companyCodeChanged(code!),
       onChanged: (code) => context.read<LoginCubit>().companyCodeChanged(code!),
+      initialText: context.select((LoginCubit c) => c.state.companyCode),
       focusNode: widgetFN,
       nextFocusNode: nextWidgetFN,
       validator: (value) {
@@ -130,6 +131,7 @@ class _UsernameInput extends StatelessWidget {
       onChanged: (username) =>
           context.read<LoginCubit>().usernameChanged(username!),
       labelText: context.l.o_l_username,
+      initialText: context.select((LoginCubit c) => c.state.username),
       focusNode: widgetFN,
       nextFocusNode: nextWidgetFN,
       validator: (value) {
@@ -145,32 +147,59 @@ class _UsernameInput extends StatelessWidget {
 }
 
 class _PasswordInput extends StatelessWidget {
+  /// Create [_PasswordInput] instance
   _PasswordInput({required this.widgetFN});
 
   final FocusNode widgetFN;
 
+  // Controller for the password field
+  final TextEditingController _passwordController = TextEditingController();
+  final SimpleTextCubit _cubit = SimpleTextCubit();
+
+
   @override
   Widget build(BuildContext context) {
-    return FieldString(
-      key: const Key('authPage_passwordInput_textField'),
+    _cubit.setController(_passwordController);
+    return BlocListener<LoginCubit, LoginState>(
+      listenWhen: (previous, current) => // listen only when status is failure
+          previous.status != current.status &&
+          current.status == LoadingStatus.failure,
+      listener: (context, state) {
+        _passwordController.clear();
+        widgetFN.requestFocus();
+      },
+      child: BlocBuilder<LoginCubit, LoginState>(
+        buildWhen: (previous, current) => previous.password != current.password,
+        builder: (context, state) {
+          if (_passwordController.text != state.password) {
+            final selection = _passwordController.selection;
+            _passwordController.text = state.password;
 
-      initialText: context.select((LoginCubit c) => c.state.password),
-      onChanged: (password) {
-        if (password != null) {
-          context.read<LoginCubit>().passwordChanged(password);
-        }
-      },
-      labelText: context.l.o_l_password,
-      focusNode: widgetFN,
-      isObscurable: true,
-      validator: (value) {
-        if (value == null) {
-          return context.l.l_w_mandatory_field;
-        } else if (value.isEmpty) {
-          return context.l.l_w_not_empty_field;
-        }
-        return null;
-      },
+            if (state.password.length >= selection.end) {
+              // manage the cursor correctly to prevent incorrect password insert
+              _passwordController.selection = selection;
+            }
+          }
+
+          return FieldString(
+            key: const Key('authPage_passwordInput_textField'),
+            cubit: _cubit,
+            onChanged: (password) =>
+                context.read<LoginCubit>().passwordChanged(password!),
+            labelText: context.l.o_l_password,
+            focusNode: widgetFN,
+            isObscurable: true,
+            validator: (value) {
+              if (value == null) {
+                return context.l.l_w_mandatory_field;
+              } else if (value.isEmpty) {
+                return context.l.l_w_not_empty_field;
+              }
+              return null;
+            },
+          );
+        },
+      ),
     );
   }
 }

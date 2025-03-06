@@ -28,6 +28,7 @@ class FieldString extends StatelessWidget {
     this.validator,
     this.padding = EdgeInsets.zero,
     this.autovalidateMode,
+    this.controller
   });
 
   final String labelText;
@@ -52,6 +53,7 @@ class FieldString extends StatelessWidget {
   final String? Function(String?)? validator;
   final EdgeInsetsGeometry padding;
   final AutovalidateMode? autovalidateMode;
+  final TextEditingController? controller;
 
   @override
   Widget build(BuildContext context) {
@@ -59,6 +61,7 @@ class FieldString extends StatelessWidget {
         SimpleTextCubit(
           initialText: initialText,
           isInputTextEnabled: isEnabled,
+          controller: controller
         );
     onBuildedCubit?.call(wCubit);
     return BlocProvider.value(
