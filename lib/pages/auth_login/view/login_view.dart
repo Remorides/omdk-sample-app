@@ -145,28 +145,21 @@ class _UsernameInput extends StatelessWidget {
 }
 
 class _PasswordInput extends StatelessWidget {
-  /// Create [_PasswordInput] instance
   _PasswordInput({required this.widgetFN});
 
   final FocusNode widgetFN;
-  final _cubit = SimpleTextCubit();
 
   @override
   Widget build(BuildContext context) {
-    // return BlocListener<LoginCubit, LoginState>(
-    //   listener: (context, state) {
-    //     if (state.status == LoadingStatus.failure) {
-    //       _cubit.resetText();
-    //       //widgetFN.requestFocus();
-    //     }
-    //   },
-    //   child: ,
-    // );
     return FieldString(
       key: const Key('authPage_passwordInput_textField'),
-      cubit: _cubit,
-      onChanged: (password) =>
-          context.read<LoginCubit>().passwordChanged(password!),
+
+      initialText: context.select((LoginCubit c) => c.state.password),
+      onChanged: (password) {
+        if (password != null) {
+          context.read<LoginCubit>().passwordChanged(password);
+        }
+      },
       labelText: context.l.o_l_password,
       focusNode: widgetFN,
       isObscurable: true,

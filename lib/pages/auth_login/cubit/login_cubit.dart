@@ -25,6 +25,7 @@ class LoginCubit extends Cubit<LoginState> {
   void companyCodeChanged(String companyCode) {
     emit(
       state.copyWith(
+        status: LoadingStatus.initial,
         companyCode: companyCode,
       ),
     );
