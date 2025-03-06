@@ -2,10 +2,8 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
-import 'package:meta/meta.dart';
 import 'package:omdk_opera_api/omdk_opera_api.dart';
 import 'package:omdk_repo/omdk_repo.dart';
 
@@ -73,7 +71,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           emit(const AuthState.unauthenticated());
         } else {
           try {
-            await _initIsarDB(user.guid);
+            if(!kIsWeb) await _initIsarDB(user.guid);
             emit(AuthState.authenticated(user));
           } on Exception catch (_) {
             emit(const AuthState.unauthenticated());
@@ -91,22 +89,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   Future<void> _initIsarDB(String userGuid) async {
     await _localData.isarManager.initUserDB(
       isarSchemas: [
-        AssetSchema,
-        AttachmentSchema,
-        NodeSchema,
-        NotificationSchema,
-        ScheduledActivitySchema,
         UserSchema,
-        OSchemaSchema,
-        //TemplateActivitySchema,
-        GroupSchema,
-        MappingMapSchema,
-        MappingVersionSchema,
-        OrganizationNodeSchema,
-        SparePartGroupSchema,
-        WarehouseSchema,
-        ToolSchema,
-        FlowSchema,
       ],
       userGUID: userGuid,
     );
@@ -123,15 +106,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     LogoutRequested event,
     Emitter<AuthState> emit,
   ) async {
-    final tokenData = _authRepo.tokenData;
     await _authRepo.logOut(closeIsarDB: true);
-    if (tokenData?['CompanyCode'] is String) {
-      await FirebaseMessaging.instance.unsubscribeFromTopic(
-        '${tokenData?['CompanyCode']}_${loggedUserGUID}_Node',
-      );
-      await FirebaseMessaging.instance.unsubscribeFromTopic(
-        '${tokenData?['CompanyCode']}_${loggedUserGUID}_Asset',
-      );
-    }
   }
 }

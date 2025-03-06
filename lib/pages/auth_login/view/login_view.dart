@@ -49,9 +49,9 @@ class _LoginViewState extends State<_LoginView> {
           );
         }
       },
-      child: OMDKSliverPage(
+      child: OMDKSimplePage(
         key: const Key('authPage'),
-        appBar: _appBar,
+        appBarTitle: Text(context.l.p_t_authentication),
         withBottomBar: false,
         withDrawer: false,
         withBackgroundImage: true,
@@ -59,30 +59,29 @@ class _LoginViewState extends State<_LoginView> {
         focusNodeList: [_companyCode, _usernameFN, _passwordFN],
         isForm: true,
         formKey: _formKey,
-        pageItems: [
-          _buildSpacer(30),
-          _CompanyInput(widgetFN: _companyCode, nextWidgetFN: _usernameFN),
-          _UsernameInput(widgetFN: _usernameFN, nextWidgetFN: _passwordFN),
-          _PasswordInput(widgetFN: _passwordFN),
-          _buildSpacer(40),
-          _LoginButton(formKey: _formKey),
-        ],
+        bodyPage: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SizedBox(
+              width: 300,
+              child: Column(
+                children: [
+                  _buildSpacer(30),
+                  _CompanyInput(
+                      widgetFN: _companyCode, nextWidgetFN: _usernameFN),
+                  _UsernameInput(
+                      widgetFN: _usernameFN, nextWidgetFN: _passwordFN),
+                  _PasswordInput(widgetFN: _passwordFN),
+                  _buildSpacer(40),
+                  _LoginButton(formKey: _formKey),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
-
-  Widget get _appBar => OMDKAnimatedAppBar(
-    collapsedSize: 60,
-    expandedSize: 60,
-    title: Text(
-      context.l.p_t_authentication,
-      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-        color: Theme.of(context).colorScheme.onSurface,
-        fontWeight: FontWeight.bold,
-      ),
-    ),
-    builder: (context, open) => const Stack(clipBehavior: Clip.none),
-  );
 
   Widget _buildSpacer(double size) => Space.vertical(size);
 }
@@ -126,10 +125,10 @@ class _UsernameInput extends StatelessWidget {
   Widget build(BuildContext context) {
     return FieldString(
       key: const Key('authPage_usernameInput_textField'),
-      onSubmit:
-          (username) => context.read<LoginCubit>().usernameChanged(username!),
-      onChanged:
-          (username) => context.read<LoginCubit>().usernameChanged(username!),
+      onSubmit: (username) =>
+          context.read<LoginCubit>().usernameChanged(username!),
+      onChanged: (username) =>
+          context.read<LoginCubit>().usernameChanged(username!),
       labelText: context.l.o_l_username,
       focusNode: widgetFN,
       nextFocusNode: nextWidgetFN,
@@ -154,30 +153,31 @@ class _PasswordInput extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<LoginCubit, LoginState>(
-      listener: (context, state) {
-        if (state.status == LoadingStatus.failure) {
-          _cubit.resetText();
-          widgetFN.requestFocus();
+    // return BlocListener<LoginCubit, LoginState>(
+    //   listener: (context, state) {
+    //     if (state.status == LoadingStatus.failure) {
+    //       _cubit.resetText();
+    //       //widgetFN.requestFocus();
+    //     }
+    //   },
+    //   child: ,
+    // );
+    return FieldString(
+      key: const Key('authPage_passwordInput_textField'),
+      cubit: _cubit,
+      onChanged: (password) =>
+          context.read<LoginCubit>().passwordChanged(password!),
+      labelText: context.l.o_l_password,
+      focusNode: widgetFN,
+      isObscurable: true,
+      validator: (value) {
+        if (value == null) {
+          return context.l.l_w_mandatory_field;
+        } else if (value.isEmpty) {
+          return context.l.l_w_not_empty_field;
         }
+        return null;
       },
-      child: FieldString(
-        key: const Key('authPage_passwordInput_textField'),
-        cubit: _cubit,
-        onChanged:
-            (password) => context.read<LoginCubit>().passwordChanged(password!),
-        labelText: context.l.o_l_password,
-        focusNode: widgetFN,
-        isObscurable: true,
-        validator: (value) {
-          if (value == null) {
-            return context.l.l_w_mandatory_field;
-          } else if (value.isEmpty) {
-            return context.l.l_w_not_empty_field;
-          }
-          return null;
-        },
-      ),
     );
   }
 }
@@ -192,23 +192,21 @@ class _LoginButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<LoginCubit, LoginState>(
       buildWhen: (previous, current) => previous.status != current.status,
-      builder:
-          (context, state) =>
-              state.status == LoadingStatus.inProgress
-                  ? Center(
-                    child: CircularProgressIndicator(
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-                  )
-                  : OMDKElevatedButton(
-                    key: const Key('loginForm_continue_button'),
-                    onPressed: () {
-                      if (formKey.currentState!.validate()) {
-                        context.read<LoginCubit>().login();
-                      }
-                    },
-                    text: context.l.btn_login,
-                  ),
+      builder: (context, state) => state.status == LoadingStatus.inProgress
+          ? Center(
+              child: CircularProgressIndicator(
+                color: Theme.of(context).colorScheme.primary,
+              ),
+            )
+          : OMDKElevatedButton(
+              key: const Key('loginForm_continue_button'),
+              onPressed: () {
+                if (formKey.currentState!.validate()) {
+                  context.read<LoginCubit>().login();
+                }
+              },
+              text: context.l.btn_login,
+            ),
     );
   }
 }

@@ -36,24 +36,12 @@ class OMDKAnimatedDrawer extends StatelessWidget {
               children: [
                 _menuVoice(
                   context: context,
-                  title: context.l.d_t_settings,
-                  onTap: () => Navigator.of(context).pushNamed(settingsRoute),
-                ),
-                _divider,
-                _menuVoice(
-                  context: context,
                   title: context.l.d_t_privacy_policy,
                 ),
                 _divider,
                 _menuVoice(
                   context: context,
                   title: context.l.d_t_opera_guide,
-                ),
-                _divider,
-                _menuVoice(
-                  context: context,
-                  title: context.l.d_t_languages,
-                  onTap: () => Navigator.of(context).pushNamed(languagesRoute),
                 ),
                 _divider,
                 _menuVoice(

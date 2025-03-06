@@ -1,6 +1,3 @@
-import 'dart:io';
-import 'dart:typed_data';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -8,11 +5,9 @@ import 'package:omdk_opera_api/omdk_opera_api.dart';
 import 'package:omdk_opera_repo/omdk_opera_repo.dart';
 import 'package:omdk_repo/omdk_repo.dart';
 import 'package:omdk_sample_app/common/common.dart';
-import 'package:omdk_sample_app/common/extensions/extension_me.dart';
 import 'package:omdk_sample_app/elements/elements.dart';
 import 'package:omdk_sample_app/elements/jfields/image/widget/carousel_view_wrapper.dart';
 import 'package:omdk_sample_app/elements/shimmer/widget/shimmer_loading.dart';
-import 'package:pro_image_editor/pro_image_editor.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class FieldImage extends StatelessWidget {
@@ -179,8 +174,8 @@ class _FieldImageState extends State<_FieldImage> {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+                        fontWeight: FontWeight.bold,
+                      ),
                 ),
               ),
             ],
@@ -368,15 +363,15 @@ class _FieldImageState extends State<_FieldImage> {
                         leading: const Icon(CupertinoIcons.clear_circled),
                         onTap: _onTapRemove,
                       ),
-                      CupertinoListTile.notched(
-                        title: Text(
-                          context.l.o_l_edit_image,
-                          style: Theme.of(context).textTheme.titleMedium,
-                        ),
-                        leading: const Icon(CupertinoIcons.pencil),
-                        onTap: () =>
-                            _onEditImage(cubit.state.fileList[imageIndex]),
-                      ),
+                      // CupertinoListTile.notched(
+                      //   title: Text(
+                      //     context.l.o_l_edit_image,
+                      //     style: Theme.of(context).textTheme.titleMedium,
+                      //   ),
+                      //   leading: const Icon(CupertinoIcons.pencil),
+                      //   onTap: () =>
+                      //       _onEditImage(cubit.state.fileList[imageIndex]),
+                      // ),
                       CupertinoListTile.notched(
                         title: Text(
                           context.l.o_l_replace_image_with_camera,
@@ -400,36 +395,6 @@ class _FieldImageState extends State<_FieldImage> {
           ),
         ),
       );
-
-  // Edit existent image
-  Future<void> _onEditImage(File imageFile) async {
-    final cubit = context.read<FieldImageCubit>();
-    Navigator.pop(context);
-    final editedImage = await Navigator.push(
-      context,
-      CupertinoPageRoute<Uint8List>(
-        fullscreenDialog: true,
-        builder: (_) => ProImageEditor.file(
-          imageFile,
-          callbacks: ProImageEditorCallbacks(
-            onImageEditingComplete: (rawImage) async {
-              Navigator.of(context).pop(rawImage);
-            },
-          ),
-        ),
-      ),
-    );
-    if (editedImage != null) {
-      final newAttachmentEntity = await cubit.addEditedhoto(
-        editedImage,
-        fileName: 'Edited '
-            '${cubit.state.attachmentList[imageIndex].attachment.fileName}',
-      );
-      if (newAttachmentEntity != null) {
-        widget.onImageAdded?.call(newAttachmentEntity);
-      }
-    }
-  }
 
   // Add image from camera
   Future<void> _addImageFromCamera() async {

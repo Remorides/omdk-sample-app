@@ -6,7 +6,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_flavor/flutter_flavor.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:omdk_opera_api/omdk_opera_api.dart';
-import 'package:omdk_opera_api/omdk_opera_api.dart' as o;
 import 'package:omdk_opera_repo/omdk_opera_repo.dart';
 import 'package:omdk_repo/omdk_repo.dart';
 import 'package:omdk_sample_app/blocs/blocs.dart';
