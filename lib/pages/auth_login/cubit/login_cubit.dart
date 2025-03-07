@@ -22,42 +22,23 @@ class LoginCubit extends Cubit<LoginState> {
   final AuthRepo _authRepo;
 
   /// Metodo per cambiare il companyCode
-  void companyCodeChanged(String companyCode) {
-    emit(
-      state.copyWith(
-        status: LoadingStatus.initial,
-        companyCode: companyCode,
-      ),
-    );
+  void companyCodeChanged(String? companyCode) {
+    emit(state.copyWith(companyCode: companyCode));
   }
 
   /// Metodo per cambiare lo stato dell'username
-  void usernameChanged(String username) {
-    emit(
-      state.copyWith(
-        status: LoadingStatus.initial,
-        username: username,
-      ),
-    );
+  void usernameChanged(String? username) {
+    emit(state.copyWith(username: username));
   }
 
   /// Metodo per cambiare la password
-  void passwordChanged(String password) {
-    emit(
-      state.copyWith(
-        status: LoadingStatus.initial,
-        password: password,
-      ),
-    );
+  void passwordChanged(String? password) {
+    emit(state.copyWith(password: password));
   }
 
   /// Metodo per cambiare il rememberMe
   void rememberMeChanged(bool rememberMe) {
-    emit(
-      state.copyWith(
-        rememberMe: rememberMe,
-      ),
-    );
+    emit(state.copyWith(rememberMe: rememberMe));
   }
 
   /// Metodo per gestire i campi vuoti
@@ -72,30 +53,27 @@ class LoginCubit extends Cubit<LoginState> {
 
   /// Metodo per la login offline
   Future<void> loginOffline() async {
-    /// perchè qua non faccio l'emit del status progress?
-    try {
-      await _authRepo
-          .logInOffline(
-        authLogin: AuthLogin(
-          companyCode: state.companyCode,
-          userName: state.username,
-          password: state.password,
-          clientTypeId: ClientType.Mobile.name,
-        ).toJson(),
-      )
-          .timeout(
-        const Duration(seconds: 10),
-        onTimeout: () => throw TimeoutException('Timeout reached'),
-      );
-      emit(state.copyWith(status: LoadingStatus.done));
-    } on Exception {
-      emit(
-        state.copyWith(
-          status: LoadingStatus.failure,
-          errorText: 'Authentication failure, please try again',
-        ),
-      );
-    }
+    await _authRepo
+        .logInOffline(
+          authLogin: AuthLogin(
+            companyCode: state.companyCode,
+            userName: state.username,
+            password: state.password,
+            clientTypeId: ClientType.Mobile.name,
+          ).toJson(),
+        )
+        .timeout(
+          const Duration(seconds: 10),
+          onTimeout: () => throw TimeoutException('Timeout reached'),
+        )
+        .onError(
+          (e, _) => emit(
+            state.copyWith(
+              status: LoadingStatus.failure,
+              errorText: 'Authentication failure, please try again',
+            ),
+          ),
+        );
   }
 
   /// Metodo per la submit del della login
@@ -112,18 +90,18 @@ class LoginCubit extends Cubit<LoginState> {
     try {
       await _authRepo
           .logIn(
-        authLogin: AuthLogin(
-          companyCode: state.companyCode,
-          userName: state.username,
-          password: state.password,
-          clientTypeId: ClientType.Mobile.name,
-        ).toJson(),
-        allowOfflineLogin: true,
-      )
+            authLogin: AuthLogin(
+              companyCode: state.companyCode,
+              userName: state.username,
+              password: state.password,
+              clientTypeId: ClientType.Mobile.name,
+            ).toJson(),
+            allowOfflineLogin: true,
+          )
           .timeout(
-        const Duration(seconds: 10),
-        onTimeout: () => throw TimeoutException('Timeout reached'),
-      );
+            const Duration(seconds: 10),
+            onTimeout: () => throw TimeoutException('Timeout reached'),
+          );
 
       emit(state.copyWith(status: LoadingStatus.done));
     } catch (e) {
