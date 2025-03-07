@@ -207,7 +207,7 @@ class SimpleTextField extends StatelessWidget {
         textInputAction: textInputAction,
         textAlign: textAlign,
         obscureText:
-            isObscurable && !context.read<SimpleTextCubit>().state.obscureText,
+            isObscurable && !context.watch<SimpleTextCubit>().state.obscureText,
         maxLines: maxLines,
         onChanged: (text) {
           context.read<SimpleTextCubit>().changeText(text);
