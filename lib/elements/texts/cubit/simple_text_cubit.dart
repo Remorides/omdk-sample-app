@@ -15,7 +15,7 @@ class SimpleTextCubit extends Cubit<SimpleTextState> {
     TextEditingController? controller,
   }) : super(
     SimpleTextState(
-      controller: controller ?? TextEditingController(text: initialText),
+      controller: controller ?? TextEditingController(text: initialText ?? ''),
       text: initialText,
       isActionEnabled: isActionEnabled,
       isInputTextEnabled: isInputTextEnabled,

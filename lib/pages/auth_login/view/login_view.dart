@@ -98,9 +98,8 @@ class _CompanyInput extends StatelessWidget {
     return FieldString(
       key: const Key('authPage_companyCode_textField'),
       labelText: context.l.o_l_company_code,
-      onSubmit: (code) => context.read<LoginCubit>().companyCodeChanged(code!),
-      onChanged: (code) => context.read<LoginCubit>().companyCodeChanged(code!),
-      initialText: context.select((LoginCubit c) => c.state.companyCode),
+      onSubmit: (code) => context.read<LoginCubit>().companyCodeChanged(code),
+      onChanged: (code) => context.read<LoginCubit>().companyCodeChanged(code),
       focusNode: widgetFN,
       nextFocusNode: nextWidgetFN,
       validator: (value) {
@@ -127,11 +126,10 @@ class _UsernameInput extends StatelessWidget {
     return FieldString(
       key: const Key('authPage_usernameInput_textField'),
       onSubmit: (username) =>
-          context.read<LoginCubit>().usernameChanged(username!),
+          context.read<LoginCubit>().usernameChanged(username),
       onChanged: (username) =>
-          context.read<LoginCubit>().usernameChanged(username!),
+          context.read<LoginCubit>().usernameChanged(username),
       labelText: context.l.o_l_username,
-      initialText: context.select((LoginCubit c) => c.state.username),
       focusNode: widgetFN,
       nextFocusNode: nextWidgetFN,
       validator: (value) {
@@ -152,52 +150,35 @@ class _PasswordInput extends StatelessWidget {
 
   final FocusNode widgetFN;
 
-  // Controller for the password field
-  final TextEditingController _passwordController = TextEditingController();
-  final SimpleTextCubit _cubit = SimpleTextCubit();
-
+  final cubit = SimpleTextCubit();
 
   @override
   Widget build(BuildContext context) {
-    _cubit.setController(_passwordController);
     return BlocListener<LoginCubit, LoginState>(
-      listenWhen: (previous, current) => // listen only when status is failure
+      listenWhen: (previous, current) =>
           previous.status != current.status &&
           current.status == LoadingStatus.failure,
       listener: (context, state) {
-        _passwordController.clear();
-        widgetFN.requestFocus();
+        // Reset password here
+        cubit.resetText();
       },
-      child: BlocBuilder<LoginCubit, LoginState>(
-        buildWhen: (previous, current) => previous.password != current.password,
-        builder: (context, state) {
-          if (_passwordController.text != state.password) {
-            final selection = _passwordController.selection;
-            _passwordController.text = state.password;
-
-            if (state.password.length >= selection.end) {
-              // manage the cursor correctly to prevent incorrect password insert
-              _passwordController.selection = selection;
-            }
+      child: FieldString(
+        key: const Key('authPage_passwordInput_textField'),
+        cubit: cubit,
+        onChanged: (password) =>
+            context.read<LoginCubit>().passwordChanged(password),
+        onSubmit: (password) =>
+            context.read<LoginCubit>().passwordChanged(password),
+        labelText: context.l.o_l_password,
+        focusNode: widgetFN,
+        isObscurable: true,
+        validator: (value) {
+          if (value == null) {
+            return context.l.l_w_mandatory_field;
+          } else if (value.isEmpty) {
+            return context.l.l_w_not_empty_field;
           }
-
-          return FieldString(
-            key: const Key('authPage_passwordInput_textField'),
-            cubit: _cubit,
-            onChanged: (password) =>
-                context.read<LoginCubit>().passwordChanged(password!),
-            labelText: context.l.o_l_password,
-            focusNode: widgetFN,
-            isObscurable: true,
-            validator: (value) {
-              if (value == null) {
-                return context.l.l_w_mandatory_field;
-              } else if (value.isEmpty) {
-                return context.l.l_w_not_empty_field;
-              }
-              return null;
-            },
-          );
+          return null;
         },
       ),
     );

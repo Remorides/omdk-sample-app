@@ -28,7 +28,7 @@ class FieldString extends StatelessWidget {
     this.validator,
     this.padding = EdgeInsets.zero,
     this.autovalidateMode,
-    this.controller
+    this.controller,
   });
 
   final String labelText;
@@ -61,7 +61,7 @@ class FieldString extends StatelessWidget {
         SimpleTextCubit(
           initialText: initialText,
           isInputTextEnabled: isEnabled,
-          controller: controller
+          controller: controller,
         );
     onBuildedCubit?.call(wCubit);
     return BlocProvider.value(

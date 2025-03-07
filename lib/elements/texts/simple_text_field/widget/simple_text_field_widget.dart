@@ -125,7 +125,7 @@ class SimpleTextField extends StatelessWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Expanded(child: _textField),
+              Expanded(child: _buildTextField(context)),
               if (withAction) _action,
             ],
           ),
@@ -193,65 +193,65 @@ class SimpleTextField extends StatelessWidget {
         ),
       );
 
-  Widget get _textField => BlocBuilder<SimpleTextCubit, SimpleTextState>(
-        builder: (context, state) => TextFormField(
-          key: key,
-          controller: state.controller,
-          onTap: onTap,
-          autofocus: autofocus,
-          autovalidateMode: autovalidateMode,
-          enabled: state.isInputTextEnabled,
-          readOnly: !state.isInputTextEnabled,
-          focusNode: textFocusNode,
-          keyboardType: keyboardType,
-          textCapitalization: textCapitalization,
-          textInputAction: textInputAction,
-          textAlign: textAlign,
-          obscureText: isObscurable && !state.obscureText,
-          maxLines: maxLines,
-          onChanged: (text) {
-            context.read<SimpleTextCubit>().changeText(text);
-            onChanged?.call(text);
-          },
-          onFieldSubmitted: onSubmit,
-          validator: validator,
-          onTapOutside: (e) => FocusScope.of(context).unfocus(),
-          decoration: InputDecoration(
-            border: Theme.of(context).inputDecorationTheme.border?.copyWith(
-                  borderSide: Theme.of(context)
-                      .inputDecorationTheme
-                      .border
-                      ?.borderSide
-                      .copyWith(
-                        color: isRequired
-                            ? Theme.of(context).colorScheme.error
-                            : null,
-                      ),
-                ),
-            disabledBorder: isRequired
-                ? Theme.of(context)
+  Widget _buildTextField(BuildContext context) => TextFormField(
+        key: key,
+        controller: context.read<SimpleTextCubit>().state.controller,
+        onTap: onTap,
+        autofocus: autofocus,
+        autovalidateMode: autovalidateMode,
+        enabled: context.read<SimpleTextCubit>().state.isInputTextEnabled,
+        readOnly: !context.read<SimpleTextCubit>().state.isInputTextEnabled,
+        focusNode: textFocusNode,
+        keyboardType: keyboardType,
+        textCapitalization: textCapitalization,
+        textInputAction: textInputAction,
+        textAlign: textAlign,
+        obscureText:
+            isObscurable && !context.read<SimpleTextCubit>().state.obscureText,
+        maxLines: maxLines,
+        onChanged: (text) {
+          context.read<SimpleTextCubit>().changeText(text);
+          onChanged?.call(text);
+        },
+        onFieldSubmitted: onSubmit,
+        validator: validator,
+        onTapOutside: (e) => FocusScope.of(context).unfocus(),
+        decoration: InputDecoration(
+          border: Theme.of(context).inputDecorationTheme.border?.copyWith(
+                borderSide: Theme.of(context)
                     .inputDecorationTheme
-                    .disabledBorder
-                    ?.copyWith(
-                      borderSide: Theme.of(context)
-                          .inputDecorationTheme
-                          .border
-                          ?.borderSide
-                          .copyWith(
-                            color: Theme.of(context)
-                                .colorScheme
-                                .error
-                                .withAlpha(150),
-                          ),
-                    )
-                : null,
-            hintText: placeholder,
-            hintMaxLines: maxLines,
-            errorText: state.errorText?.localizateError(context),
-            suffixText: suffixText,
-            suffixIcon: isObscurable ? _suffixIcon : null,
-            suffixIconColor: Colors.grey,
-          ),
+                    .border
+                    ?.borderSide
+                    .copyWith(
+                      color: isRequired
+                          ? Theme.of(context).colorScheme.error
+                          : null,
+                    ),
+              ),
+          disabledBorder: isRequired
+              ? Theme.of(context).inputDecorationTheme.disabledBorder?.copyWith(
+                    borderSide: Theme.of(context)
+                        .inputDecorationTheme
+                        .border
+                        ?.borderSide
+                        .copyWith(
+                          color: Theme.of(context)
+                              .colorScheme
+                              .error
+                              .withAlpha(150),
+                        ),
+                  )
+              : null,
+          hintText: placeholder,
+          hintMaxLines: maxLines,
+          errorText: context
+              .read<SimpleTextCubit>()
+              .state
+              .errorText
+              ?.localizateError(context),
+          suffixText: suffixText,
+          suffixIcon: isObscurable ? _suffixIcon : null,
+          suffixIconColor: Colors.grey,
         ),
       );
 
