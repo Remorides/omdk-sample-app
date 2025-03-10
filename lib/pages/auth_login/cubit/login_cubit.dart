@@ -23,17 +23,17 @@ class LoginCubit extends Cubit<LoginState> {
 
   /// Metodo per cambiare il companyCode
   void companyCodeChanged(String? companyCode) {
-    emit(state.copyWith(companyCode: companyCode));
+    emit(state.copyWith(companyCode: companyCode, status: LoadingStatus.initial));
   }
 
   /// Metodo per cambiare lo stato dell'username
   void usernameChanged(String? username) {
-    emit(state.copyWith(username: username));
+    emit(state.copyWith(username: username, status: LoadingStatus.initial));
   }
 
   /// Metodo per cambiare la password
   void passwordChanged(String? password) {
-    emit(state.copyWith(password: password));
+    emit(state.copyWith(password: password, status: LoadingStatus.initial));
   }
 
   /// Metodo per cambiare il rememberMe

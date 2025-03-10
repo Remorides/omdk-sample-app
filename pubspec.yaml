@@ -44,12 +44,12 @@ dependencies:
   omdk_opera_api:
     git:
       url: https://github.com/Remorides/omdk-opera-api.git
-      ref: main
+      ref: dev/userGetItemsSync
 
   omdk_opera_repo:
     git:
       url: https://github.com/Remorides/omdk-opera-repo.git
-      ref: main
+      ref: dev_prova
 
 dev_dependencies:
   build_runner: ^2.4.14

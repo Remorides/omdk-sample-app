@@ -161,13 +161,14 @@ class _PasswordInput extends StatelessWidget {
       listener: (context, state) {
         // Reset password here
         cubit.resetText();
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          widgetFN.requestFocus();
+        });
       },
       child: FieldString(
         key: const Key('authPage_passwordInput_textField'),
         cubit: cubit,
         onChanged: (password) =>
-            context.read<LoginCubit>().passwordChanged(password),
-        onSubmit: (password) =>
             context.read<LoginCubit>().passwordChanged(password),
         labelText: context.l.o_l_password,
         focusNode: widgetFN,
