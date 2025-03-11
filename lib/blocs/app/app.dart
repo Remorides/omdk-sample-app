@@ -71,13 +71,18 @@ class _AppState extends State<App> {
         RepositoryProvider.value(value: widget.authRepo),
         RepositoryProvider.value(value: _attachmentRepo),
         RepositoryProvider.value(value: widget.omdkLocalData),
+        RepositoryProvider<OperaUtils>(
+          create: (_) => OperaUtils(
+            localData: widget.omdkLocalData,
+            authRepo: widget.authRepo,
+          ),
+        ),
         RepositoryProvider<OperaUserRepo>(
-          create:
-              (_) => OperaUserRepo(
-                OperaApiUser(widget.omdkApi.apiClient),
-                entityIsarSchema: !kIsWeb ? UserSchema : null,
-                connectivityProvider: _connectivityProvider,
-              ),
+          create: (_) => OperaUserRepo(
+            OperaApiUser(widget.omdkApi.apiClient),
+            entityIsarSchema: !kIsWeb ? UserSchema : null,
+            connectivityProvider: _connectivityProvider,
+          ),
         ),
       ],
       child: MultiProvider(
@@ -85,15 +90,14 @@ class _AppState extends State<App> {
           RouteObserverProvider(),
           ChangeNotifierProvider.value(value: _connectivityProvider),
           BlocProvider(
-            create:
-                (_) => AuthBloc(
-                  authRepo: widget.authRepo,
-                  localData: widget.omdkLocalData,
-                )..add(
-                  paramOTP != null
-                      ? ValidateOTP(otp: paramOTP!)
-                      : RestoreSession(),
-                ),
+            create: (_) => AuthBloc(
+              authRepo: widget.authRepo,
+              localData: widget.omdkLocalData,
+            )..add(
+                paramOTP != null
+                    ? ValidateOTP(otp: paramOTP!)
+                    : RestoreSession(),
+              ),
           ),
         ],
         child: AppView(theme: widget.defaultTheme),
@@ -151,43 +155,42 @@ class _AppViewState extends State<AppView> {
           Locale('es'),
           Locale('fr'),
         ],
-        builder:
-            (context, child) => BlocListener<AuthBloc, AuthState>(
-              listener: (context, state) async {
-                switch (state.status) {
-                  case AuthStatus.tokenExpired:
+        builder: (context, child) => BlocListener<AuthBloc, AuthState>(
+          listener: (context, state) async {
+            switch (state.status) {
+              case AuthStatus.tokenExpired:
 
-                    /// Do nothing
-                    break;
-                  case AuthStatus.authenticated:
-                    await _navigator.pushNamedAndRemoveUntil(
-                      homeRoute,
-                      (route) => false,
-                    );
-                  case AuthStatus.unauthenticated:
-                    await _navigator.pushNamedAndRemoveUntil(
-                      loginRoute,
-                      (route) => false,
-                    );
-                  case AuthStatus.unknown:
+                /// Do nothing
+                break;
+              case AuthStatus.authenticated:
+                await _navigator.pushNamedAndRemoveUntil(
+                  homeRoute,
+                  (route) => false,
+                );
+              case AuthStatus.unauthenticated:
+                await _navigator.pushNamedAndRemoveUntil(
+                  loginRoute,
+                  (route) => false,
+                );
+              case AuthStatus.unknown:
 
-                    /// Initial and default status of AuthStatus
-                    /// Wait for changes
-                    break;
-                  case AuthStatus.otpFailed:
-                    await _navigator.pushNamedAndRemoveUntil(
-                      otpFailsRoute,
-                      (route) => false,
-                    );
-                  case AuthStatus.conflicted:
-                    await _navigator.pushNamedAndRemoveUntil(
-                      loginRoute,
-                      (route) => false,
-                    );
-                }
-              },
-              child: child,
-            ),
+                /// Initial and default status of AuthStatus
+                /// Wait for changes
+                break;
+              case AuthStatus.otpFailed:
+                await _navigator.pushNamedAndRemoveUntil(
+                  otpFailsRoute,
+                  (route) => false,
+                );
+              case AuthStatus.conflicted:
+                await _navigator.pushNamedAndRemoveUntil(
+                  loginRoute,
+                  (route) => false,
+                );
+            }
+          },
+          child: child,
+        ),
       ),
     );
   }

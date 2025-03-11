@@ -65,7 +65,7 @@ class _HomeMenu extends StatelessWidget {
         final String firstName = element.user?.firstName ?? '';
         final String lastName = element.user?.lastName ?? '';
         final String fullName =
-        [firstName, lastName].where((part) => part.isNotEmpty).join(' ');
+            [firstName, lastName].where((part) => part.isNotEmpty).join(' ');
         final String username = element.user?.username != null
             ? 'Username: ${element.user?.username}'
             : "";
@@ -83,32 +83,10 @@ class _HomeMenu extends StatelessWidget {
             subtitle: Text(username),
             trailing: const Icon(Icons.chevron_right),
             onTap: () {
-              // Mostra un dialog con i dettagli dell'utente
-              showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return AlertDialog(
-                    title: const Text('Details'),
-                    content: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('First name: ${firstName.isNotEmpty ? firstName : "N/A"}'),
-                        const SizedBox(height: 8),
-                        Text('Last name: ${lastName.isNotEmpty ? lastName : "N/A"}'),
-                      ],
-                    ),
-                    actions: [
-                      TextButton(
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                        child: const Text('Close'),
-                      ),
-                    ],
-                  );
-                },
-              );
+              UserDialogHelper().showUserProfileDialog(
+                  context: context,
+                  guid: element.guid!,
+                  operaUserRepo: context.read<OperaUserRepo>());
             },
           ),
         );

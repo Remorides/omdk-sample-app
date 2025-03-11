@@ -15,17 +15,19 @@ part 'home_state.dart';
 /// [Cubit] logic for home widget
 class HomeCubit extends Cubit<HomeState> {
   /// [OperaUserRepo] for the api
-  final OperaUserRepo _userRepo;
+  final OperaUserRepo userRepo;
 
   /// Constructor that initializes the Cubit and automatically loads the data
-  HomeCubit(this._userRepo) : super(const HomeState());
+  HomeCubit({
+    required this.userRepo,
+  }) : super(const HomeState());
 
   /// loads data
   Future<void> loadItems() async {
     // update status into progress
     emit(state.copyWith(status: LoadingStatus.inProgress));
 
-    final apiRequest = await _userRepo.getAPIItems(0, 50);
+    final apiRequest = await userRepo.getAPIItems(0, 50);
     // menage the result
     apiRequest.fold(
       (pagedData) {
